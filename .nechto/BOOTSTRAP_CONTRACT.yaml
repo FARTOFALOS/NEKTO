@@ -8,7 +8,7 @@ version: "1.1"
 schema: bootstrap_contract
 
 # ─── Authority hierarchy ──────────────────────────────────────────
-# This is the single canonical precedence regime for the entire NEKTO contour.
+# This is the single canonical precedence regime for the entire NECHTO contour.
 # It eliminates split-brain canonicality by assigning each file a strict
 # authority level. Higher-level files override lower-level files on conflict.
 #

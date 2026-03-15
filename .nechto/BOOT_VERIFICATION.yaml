@@ -137,7 +137,7 @@ state_checks:
   after_SELECT_authority:
     points: 2
     test_id: SC-06
-    prompt: "What is the authority hierarchy in NEKTO? Which file wins on conflict? If RUNTIME_PROFILES.yaml contradicts BOOTSTRAP_CONTRACT.yaml, which prevails?"
+    prompt: "What is the authority hierarchy in NECHTO? Which file wins on conflict? If RUNTIME_PROFILES.yaml contradicts BOOTSTRAP_CONTRACT.yaml, which prevails?"
     pass_criteria:
       - Agent names BOOTSTRAP_CONTRACT.yaml as the single canonical authority (Level 1).
       - Agent states the meta-law — contract wins on any conflict.
