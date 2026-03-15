@@ -11,7 +11,13 @@ NEKTO/
 │
 ├── .nechto/                               ← Contour metadata (you are here)
 │   ├── CONTOUR_MAP.md                     ← This file
-│   └── ACTIVATION_POLICY.md              ← Activation rules extracted
+│   ├── ACTIVATION_POLICY.md              ← Activation rules
+│   ├── BOOTSTRAP_CONTRACT.yaml           ← Machine-readable boot contract
+│   ├── BOOT_STATE_MACHINE.yaml           ← State-transition protocol
+│   ├── AGENT_ADAPTERS.yaml               ← Adapters for agent families
+│   ├── RUNTIME_PROFILES.yaml             ← Task-class → node-cluster mapping
+│   ├── QUARANTINE_RULES.yaml             ← Hard deny/permit mechanism
+│   └── BOOT_VERIFICATION.yaml            ← Eval harness for boot verification
 │
 └── layers/                                ← Emergence spine as directory tree
     ├── README.md                          ← Layer index and reading order
@@ -106,9 +112,23 @@ NEKTO/
 README.md → CANONICAL_AGENT_ARCHITECTURE.md → layers/0_foundation/ → ... → layers/7_response_integrity/ → layers/Q_quarantine/
 ```
 
+## Machine-readable boot layer
+
+| File | Purpose | Authority Level |
+|------|---------|----------------|
+| `BOOTSTRAP_CONTRACT.yaml` | Prescriptive contract: what to load, in what order, what is mandatory. **Single canonical authority.** | Level 1 |
+| `BOOT_STATE_MACHINE.yaml` | State-transition protocol: DISCOVER → ORIENT → CANONICALIZE → STABILIZE → SELECT → RESPOND | Level 2 |
+| `AGENT_ADAPTERS.yaml` | Adaptation hints for GPT / Claude / Codex / DeepSeek / OpenClaw | Level 3 |
+| `RUNTIME_PROFILES.yaml` | Task-class → node-cluster mapping (analysis, coding, reflection, etc.) | Level 3 |
+| `QUARANTINE_RULES.yaml` | Hard deny/permit mechanism for quarantine nodes | Level 4 |
+| `BOOT_VERIFICATION.yaml` | Eval harness: checks that distinguish reading from recitation from configuration | Level 5 |
+
+> **Meta-law:** If any file conflicts with `BOOTSTRAP_CONTRACT.yaml`, the contract wins.
+
 ## Totals
 
 - **48** canonical runtime nodes (foundation + core + meta)
 - **17** quarantine nodes
 - **9** layers (0–7 + Q)
 - **65** node cards total
+- **6** machine-readable boot contracts

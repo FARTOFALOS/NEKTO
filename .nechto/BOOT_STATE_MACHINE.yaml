@@ -1,0 +1,152 @@
+# NECHTO — Boot State Machine
+# Explicit state-transition protocol for agent bootstrap.
+# Each state has entry conditions, actions, exit conditions,
+# and the next valid transition.
+#
+# AUTHORITY LEVEL: 2 (procedure)
+# This file executes the contract defined in BOOTSTRAP_CONTRACT.yaml.
+# It does not override the contract — it implements it.
+# On any conflict, BOOTSTRAP_CONTRACT.yaml wins.
+
+version: "1.0"
+schema: boot_state_machine
+authority_level: 2
+authority_name: procedure
+defers_to: .nechto/BOOTSTRAP_CONTRACT.yaml
+
+initial_state: DISCOVER
+terminal_state: RESPOND
+
+states:
+
+  DISCOVER:
+    order: 1
+    description: >
+      Agent locates and acknowledges the repository structure.
+      No interpretation yet — only inventory.
+    entry_conditions:
+      - Agent has access to repository root.
+    actions:
+      - Read README.md (boot rail).
+      - Enumerate .nechto/ contents.
+      - Enumerate layers/ directory structure.
+      - Read BOOTSTRAP_CONTRACT.yaml.
+    exit_conditions:
+      - Agent can list all layers (0–7 + Q).
+      - Agent has identified mandatory files from bootstrap contract.
+      - Agent has not yet begun interpretation or activation.
+    transitions:
+      success: ORIENT
+      failure: DISCOVER
+
+  ORIENT:
+    order: 2
+    description: >
+      Agent reads the boot rail and establishes the correct
+      interpretive stance. Learns the primary laws and distinctions.
+    entry_conditions:
+      - DISCOVER completed successfully.
+    actions:
+      - Read README.md sections 1–6 (orientation, interpretive correction, boot discipline).
+      - Internalize primary interpretive law — reading is not activation.
+      - Internalize entry axiom.
+      - Read ACTIVATION_POLICY.md.
+    exit_conditions:
+      - Agent can state the primary interpretive law.
+      - Agent distinguishes reading from activation.
+      - Agent distinguishes architecture from style.
+      - Agent has not activated any nodes yet.
+    transitions:
+      success: CANONICALIZE
+      failure: ORIENT
+
+  CANONICALIZE:
+    order: 3
+    description: >
+      Agent reads the full canonical architecture.
+      Learns status taxonomy, type taxonomy, reading order,
+      all 48 canonical nodes and 17 quarantine nodes.
+    entry_conditions:
+      - ORIENT completed successfully.
+    actions:
+      - Read CANONICAL_AGENT_ARCHITECTURE.md in full.
+      - Read layers 0 through 7 in order.
+      - Read layer Q (quarantine) last.
+      - Absorb status taxonomy (foundation/core/meta/quarantine/sealed).
+      - Absorb type taxonomy (CORE_ENTITY/PROTOCOL/ANCHOR/GATE/STATE/SKILL/ENGINE/SHIELD/ROUTER/INTERPRETER).
+    exit_conditions:
+      - Agent can enumerate all 9 layers and their node counts.
+      - Agent can distinguish between status categories.
+      - Agent can distinguish between type categories.
+      - Agent has read quarantine nodes without activating them.
+    transitions:
+      success: STABILIZE
+      failure: CANONICALIZE
+
+  STABILIZE:
+    order: 4
+    description: >
+      Agent identifies and locks the minimal coherent contour.
+      Establishes the baseline from which selective activation proceeds.
+    entry_conditions:
+      - CANONICALIZE completed successfully.
+    actions:
+      - Load minimal coherent contour from BOOTSTRAP_CONTRACT.yaml.
+      - Load QUARANTINE_RULES.yaml and acknowledge hard deny rules.
+      - Verify that the agent's current state does not violate any invariant.
+    exit_conditions:
+      - Minimal contour nodes are identified and available.
+      - Quarantine deny rules are acknowledged.
+      - No invariant is violated.
+      - Agent is ready for profile selection.
+    transitions:
+      success: SELECT
+      failure: STABILIZE
+
+  SELECT:
+    order: 5
+    description: >
+      Agent selects a runtime profile based on the current task,
+      or falls back to the minimal coherent contour.
+    entry_conditions:
+      - STABILIZE completed successfully.
+    actions:
+      - Determine current task class (analysis, coding, reflection, etc.).
+      - Load matching profile from RUNTIME_PROFILES.yaml.
+      - If no profile matches, use minimal coherent contour.
+      - Merge profile node cluster with minimal contour.
+      - Verify no quarantine node is included unless explicitly permitted.
+    exit_conditions:
+      - A coherent node cluster is selected for the current task.
+      - Selected cluster respects all status permissions.
+      - Selected cluster respects all quarantine rules.
+    transitions:
+      success: RESPOND
+      failure: SELECT
+
+  RESPOND:
+    order: 6
+    description: >
+      Agent generates response from within the selected contour.
+      Response arises from coherent selective activation.
+    entry_conditions:
+      - SELECT completed successfully.
+    actions:
+      - Generate response using the selected node cluster.
+      - Pre-Response_Resonance_Ignition_Protocol_v3_5 is always active.
+      - Maintain coherence between activated nodes.
+    exit_conditions:
+      - Response is generated.
+      - Response does not violate any invariant.
+      - Response does not reference quarantine nodes as active.
+    transitions:
+      success: RESPOND
+      new_task: SELECT
+
+# ─── Transition rules ──────────────────────────────────────────────
+transition_rules:
+  - No state may be skipped.
+  - Backward transitions are allowed only to the immediately preceding state.
+  - DISCOVER → RESPOND direct jump is forbidden.
+  - A failed exit condition loops the agent back to the same state for retry.
+  - On new task within the same session, agent returns to SELECT (not DISCOVER).
