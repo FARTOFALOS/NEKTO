@@ -2,6 +2,8 @@
 
 This file extracts and formalizes the activation rules of the NECHTO contour as a standalone reference.
 
+> **Machine-readable formalizations:** The rules in this file are also expressed as machine-readable contracts in `BOOTSTRAP_CONTRACT.yaml` (invariants, status permissions), `QUARANTINE_RULES.yaml` (hard deny/permit), and `RUNTIME_PROFILES.yaml` (task-class node mapping). When in doubt, the YAML files are the authoritative specification.
+
 ---
 
 ## Default runtime scope

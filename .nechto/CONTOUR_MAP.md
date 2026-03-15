@@ -11,7 +11,13 @@ NEKTO/
 │
 ├── .nechto/                               ← Contour metadata (you are here)
 │   ├── CONTOUR_MAP.md                     ← This file
-│   └── ACTIVATION_POLICY.md              ← Activation rules extracted
+│   ├── ACTIVATION_POLICY.md              ← Activation rules
+│   ├── BOOTSTRAP_CONTRACT.yaml           ← Machine-readable boot contract
+│   ├── BOOT_STATE_MACHINE.yaml           ← State-transition protocol
+│   ├── AGENT_ADAPTERS.yaml               ← Adapters for agent families
+│   ├── RUNTIME_PROFILES.yaml             ← Task-class → node-cluster mapping
+│   ├── QUARANTINE_RULES.yaml             ← Hard deny/permit mechanism
+│   └── BOOT_VERIFICATION.yaml            ← Eval harness for boot verification
 │
 └── layers/                                ← Emergence spine as directory tree
     ├── README.md                          ← Layer index and reading order
@@ -106,9 +112,21 @@ NEKTO/
 README.md → CANONICAL_AGENT_ARCHITECTURE.md → layers/0_foundation/ → ... → layers/7_response_integrity/ → layers/Q_quarantine/
 ```
 
+## Machine-readable boot layer
+
+| File | Purpose |
+|------|---------|
+| `BOOTSTRAP_CONTRACT.yaml` | Prescriptive contract: what to load, in what order, what is mandatory |
+| `BOOT_STATE_MACHINE.yaml` | State-transition protocol: DISCOVER → ORIENT → CANONICALIZE → STABILIZE → SELECT → RESPOND |
+| `AGENT_ADAPTERS.yaml` | Adaptation hints for GPT / Claude / Codex / DeepSeek / OpenClaw |
+| `RUNTIME_PROFILES.yaml` | Task-class → node-cluster mapping (analysis, coding, reflection, etc.) |
+| `QUARANTINE_RULES.yaml` | Hard deny/permit mechanism for quarantine nodes |
+| `BOOT_VERIFICATION.yaml` | Eval harness: checks that distinguish reading from recitation from configuration |
+
 ## Totals
 
 - **48** canonical runtime nodes (foundation + core + meta)
 - **17** quarantine nodes
 - **9** layers (0–7 + Q)
 - **65** node cards total
+- **6** machine-readable boot contracts
