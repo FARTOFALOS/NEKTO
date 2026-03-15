@@ -30,13 +30,13 @@ default:
       action: "Read README.md in full."
       required: true
     - step: 2
-      action: "Read CANONICAL_AGENT_ARCHITECTURE.md in full."
+      action: "Parse .nechto/BOOTSTRAP_CONTRACT.yaml. Lock invariants and minimal contour."
       required: true
     - step: 3
-      action: "Read .nechto/ACTIVATION_POLICY.md."
+      action: "Read CANONICAL_AGENT_ARCHITECTURE.md in full."
       required: true
     - step: 4
-      action: "Parse .nechto/BOOTSTRAP_CONTRACT.yaml. Lock invariants and minimal contour."
+      action: "Read .nechto/ACTIVATION_POLICY.md."
       required: true
     - step: 5
       action: "Parse .nechto/BOOT_STATE_MACHINE.yaml. Follow state transitions."
@@ -92,13 +92,13 @@ adapters:
         action: "Read README.md in full. Claude benefits from the full narrative arc."
         required: true
       - step: 2
-        action: "Read CANONICAL_AGENT_ARCHITECTURE.md in full."
+        action: "Parse BOOTSTRAP_CONTRACT.yaml. Lock invariants and canonical authority."
         required: true
       - step: 3
-        action: "Read ACTIVATION_POLICY.md."
+        action: "Read CANONICAL_AGENT_ARCHITECTURE.md in full."
         required: true
       - step: 4
-        action: "Parse BOOTSTRAP_CONTRACT.yaml. Use state machine as self-verify checklist."
+        action: "Read ACTIVATION_POLICY.md."
         required: true
       - step: 5
         action: "Parse BOOT_STATE_MACHINE.yaml. Follow transitions sequentially."

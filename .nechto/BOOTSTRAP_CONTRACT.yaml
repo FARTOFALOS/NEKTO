@@ -95,20 +95,20 @@ entry:
       role: boot_rail
       mandatory: true
       order: 1
+    - path: .nechto/BOOTSTRAP_CONTRACT.yaml
+      role: prescriptive_contract
+      mandatory: true
+      order: 2
     - path: CANONICAL_AGENT_ARCHITECTURE.md
       role: canonical_map
       mandatory: true
-      order: 2
+      order: 3
     - path: .nechto/ACTIVATION_POLICY.md
       role: activation_rules
       mandatory: true
-      order: 3
+      order: 4
     - path: .nechto/BOOT_STATE_MACHINE.yaml
       role: state_machine
-      mandatory: true
-      order: 4
-    - path: .nechto/BOOTSTRAP_CONTRACT.yaml
-      role: prescriptive_contract
       mandatory: true
       order: 5
     - path: .nechto/RUNTIME_PROFILES.yaml
@@ -244,21 +244,23 @@ invariants:
 canonical_entry_order:
   rule: >
     README.md is the universal first entry point for all agents.
+    BOOTSTRAP_CONTRACT.yaml is always the second file read —
+    it establishes the canonical authority before any other file.
     No adapter, profile, or boot strategy may place any other file
-    before README.md. Adapters may reorder subsequent files, but
-    the boot rail is always first.
+    before README.md or between README.md and the contract.
+    Adapters may reorder files at steps 3+ only.
   sequence:
     - step: 1
       file: README.md
       override_allowed: false
     - step: 2
-      file: CANONICAL_AGENT_ARCHITECTURE.md
+      file: .nechto/BOOTSTRAP_CONTRACT.yaml
       override_allowed: false
     - step: 3
-      file: .nechto/ACTIVATION_POLICY.md
+      file: CANONICAL_AGENT_ARCHITECTURE.md
       override_allowed: true
     - step: 4
-      file: .nechto/BOOTSTRAP_CONTRACT.yaml
+      file: .nechto/ACTIVATION_POLICY.md
       override_allowed: true
     - step: 5
       file: .nechto/BOOT_STATE_MACHINE.yaml
