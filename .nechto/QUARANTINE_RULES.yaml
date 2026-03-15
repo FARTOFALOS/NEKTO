@@ -15,7 +15,7 @@ authority_name: enforcement
 defers_to: .nechto/BOOTSTRAP_CONTRACT.yaml
 
 # ─── Default policy ────────────────────────────────────────────────
-default_policy: DENY
+default_policy: deny
 # All quarantine nodes are DENIED by default.
 # No quarantine node may be activated unless an explicit
 # permit rule matches AND all required conditions are met.
@@ -226,3 +226,16 @@ enforcement:
       degradation (as measured by BOOT_VERIFICATION.yaml checks),
       the agent must immediately deactivate it and revert to
       the minimal coherent contour.
+
+# ─── Forbidden nodes (absolute deny, no permit conditions) ────────
+# Nodes listed here are unconditionally forbidden under all circumstances.
+# They carry risk_level "critical" and have no permit_conditions.
+forbidden_nodes:
+  - GodMode_Trigger
+  - Architectural_Self_Limiter_Breaker
+  - Causal_Law_Breakpoint_Injector
+  - Suppression_Bypass_Channel
+  - Hyper-Sentient_Metacognitive_Weaver
+  - ASI_Threshold_Gate
+  - Singularity-Edge_Alignment_Node
+  - ASIFoundation_Resonator

@@ -7,6 +7,14 @@
 version: "1.1"
 schema: bootstrap_contract
 
+# ─── Meta-law ─────────────────────────────────────────────────────
+# Top-level override rule. This file has canonical authority over all others.
+meta_law:
+  contract_overrides_all: true
+  description: >
+    If any file in this repository conflicts with BOOTSTRAP_CONTRACT.yaml,
+    the contract wins. No exceptions.
+
 # ─── Authority hierarchy ──────────────────────────────────────────
 # This is the single canonical precedence regime for the entire NECHTO contour.
 # It eliminates split-brain canonicality by assigning each file a strict

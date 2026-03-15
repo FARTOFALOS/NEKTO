@@ -1,0 +1,248 @@
+name: Bootstrap Check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+jobs:
+  yaml-validation:
+    name: YAML Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Run yamllint
+        run: yamllint .
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for duplicate or temp files
+        run: |
+          # Fail if any "copy" or temp bootstrap files exist
+          if find .nechto -name "* copy*" -o -name "*_copy*" | grep -q .; then
+            echo "ERROR: Duplicate/temp files found in .nechto/"
+            find .nechto -name "* copy*" -o -name "*_copy*"
+            exit 1
+          fi
+          echo "No duplicate/temp files found."
+
+      - name: Check for bidirectional Unicode
+        run: |
+          if grep -rnP "[\x{202A}-\x{202E}]" .; then
+            echo "ERROR: Bidirectional Unicode characters found."
+            exit 1
+          fi
+          echo "No bidirectional Unicode characters found."
+
+  bootstrap-tests:
+    name: Bootstrap Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required structure
+        run: |
+          ERRORS=0
+
+          required_files=(
+            "README.md"
+            "CANONICAL_AGENT_ARCHITECTURE.md"
+            "LICENSE"
+            ".nechto/BOOTSTRAP_CONTRACT.yaml"
+            ".nechto/BOOT_STATE_MACHINE.yaml"
+            ".nechto/RUNTIME_PROFILES.yaml"
+            ".nechto/AGENT_ADAPTERS.yaml"
+            ".nechto/QUARANTINE_RULES.yaml"
+            ".nechto/BOOT_VERIFICATION.yaml"
+            ".nechto/ACTIVATION_POLICY.md"
+            ".nechto/CONTOUR_MAP.md"
+          )
+
+          for f in "${required_files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "MISSING: $f"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "ERROR: $ERRORS required file(s) missing."
+            exit 1
+          fi
+          echo "All required files present."
+
+      - name: Check BOOTSTRAP_CONTRACT authority_hierarchy
+        run: |
+          if ! grep -q "authority_hierarchy" .nechto/BOOTSTRAP_CONTRACT.yaml; then
+            echo "ERROR: authority_hierarchy block missing from BOOTSTRAP_CONTRACT.yaml"
+            exit 1
+          fi
+          echo "authority_hierarchy: OK"
+
+      - name: Check BOOTSTRAP_CONTRACT canonical_entry_order
+        run: |
+          if ! grep -q "canonical_entry_order" .nechto/BOOTSTRAP_CONTRACT.yaml; then
+            echo "ERROR: canonical_entry_order block missing from BOOTSTRAP_CONTRACT.yaml"
+            exit 1
+          fi
+          python3 - <<'EOF'
+          import sys
+          import yaml
+
+          with open(".nechto/BOOTSTRAP_CONTRACT.yaml") as f:
+              data = yaml.safe_load(f)
+
+          ceo = data.get("canonical_entry_order", {})
+          seq = ceo.get("sequence", [])
+          if not seq:
+              print("ERROR: canonical_entry_order.sequence is empty or missing")
+              sys.exit(1)
+          first = seq[0].get("file", "")
+          if first != "README.md":
+              print(f"ERROR: README.md is not the first entry in canonical_entry_order "
+                    f"(got: {first}). Ensure README.md is listed first in the "
+                    f"canonical_entry_order.sequence array.")
+              sys.exit(1)
+          print(f"canonical_entry_order: OK (README.md is first)")
+          EOF
+
+      - name: Check BOOTSTRAP_CONTRACT meta_law
+        run: |
+          if ! grep -q "meta_law" .nechto/BOOTSTRAP_CONTRACT.yaml; then
+            echo "ERROR: meta_law block missing from BOOTSTRAP_CONTRACT.yaml"
+            exit 1
+          fi
+          if ! grep -q "contract_overrides_all" .nechto/BOOTSTRAP_CONTRACT.yaml; then
+            echo "ERROR: contract_overrides_all missing from meta_law"
+            exit 1
+          fi
+          echo "meta_law: OK"
+
+      - name: Check BOOTSTRAP_CONTRACT fast_boot
+        run: |
+          if ! grep -q "fast_boot" .nechto/BOOTSTRAP_CONTRACT.yaml; then
+            echo "ERROR: fast_boot block missing from BOOTSTRAP_CONTRACT.yaml"
+            exit 1
+          fi
+          python3 - <<'EOF'
+          import sys
+          import yaml
+
+          with open(".nechto/BOOTSTRAP_CONTRACT.yaml") as f:
+              data = yaml.safe_load(f)
+
+          fb = data.get("fast_boot", {})
+          required = fb.get("required_files", [])
+          if "README.md" not in required:
+              print("ERROR: README.md not found in fast_boot.required_files")
+              sys.exit(1)
+          if not any("QUARANTINE_RULES" in str(r) for r in required):
+              print("ERROR: QUARANTINE_RULES.yaml not found in fast_boot.required_files")
+              sys.exit(1)
+          constraints = fb.get("constraints", [])
+          text = yaml.dump(fb)
+          if not any("quarantine" in str(c).lower() for c in constraints):
+              print("WARNING: No explicit quarantine constraint in fast_boot.constraints")
+          print("fast_boot: OK")
+          EOF
+
+      - name: Check BOOT_STATE_MACHINE states
+        run: |
+          ERRORS=0
+          for state in DISCOVER ORIENT CANONICALIZE STABILIZE SELECT RESPOND; do
+            if ! grep -q "^  $state:" .nechto/BOOT_STATE_MACHINE.yaml; then
+              echo "MISSING state: $state"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "ERROR: $ERRORS state(s) missing from BOOT_STATE_MACHINE.yaml"
+            exit 1
+          fi
+          echo "All required states present."
+
+      - name: Check BOOT_STATE_MACHINE state order
+        run: |
+          python3 - <<'EOF'
+          import sys
+          expected = ["DISCOVER", "ORIENT", "CANONICALIZE", "STABILIZE", "SELECT", "RESPOND"]
+          found = []
+          with open(".nechto/BOOT_STATE_MACHINE.yaml") as f:
+              for line in f:
+                  stripped = line.rstrip()
+                  for state in expected:
+                      if stripped == f"  {state}:":
+                          found.append(state)
+          if found != expected:
+              print(f"ERROR: State order mismatch.\n  Expected: {expected}\n  Found:    {found}")
+              sys.exit(1)
+          print(f"State order OK: {found}")
+          EOF
+
+      - name: Check RUNTIME_PROFILES required profiles
+        run: |
+          ERRORS=0
+          for profile in analysis coding architectural_review reflective safe_public repository_maintenance; do
+            if ! grep -q "^  $profile:" .nechto/RUNTIME_PROFILES.yaml; then
+              echo "MISSING profile: $profile"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "ERROR: $ERRORS profile(s) missing from RUNTIME_PROFILES.yaml"
+            exit 1
+          fi
+          echo "All required profiles present."
+
+      - name: Check RUNTIME_PROFILES profile fields
+        run: |
+          python3 - <<'EOF'
+          import sys
+          import yaml
+
+          with open(".nechto/RUNTIME_PROFILES.yaml") as f:
+              data = yaml.safe_load(f)
+
+          required_fields = ["activate", "deactivate", "tone"]
+          profiles = data.get("profiles", {})
+          errors = []
+
+          for name, profile in profiles.items():
+              for field in required_fields:
+                  if field not in profile:
+                      errors.append(f"Profile '{name}' missing field: {field}")
+
+          if errors:
+              for e in errors:
+                  print(f"ERROR: {e}")
+              sys.exit(1)
+          print(f"All profiles have required fields: {required_fields}")
+          EOF
+
+      - name: Check QUARANTINE_RULES default_policy
+        run: |
+          if ! grep -q "default_policy: deny" .nechto/QUARANTINE_RULES.yaml; then
+            echo "ERROR: default_policy: deny missing from QUARANTINE_RULES.yaml"
+            exit 1
+          fi
+          echo "default_policy: deny — OK"
+
+      - name: Check QUARANTINE_RULES forbidden_nodes
+        run: |
+          if ! grep -q "forbidden_nodes" .nechto/QUARANTINE_RULES.yaml; then
+            echo "ERROR: forbidden_nodes block missing from QUARANTINE_RULES.yaml"
+            exit 1
+          fi
+          echo "forbidden_nodes: OK"
