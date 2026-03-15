@@ -2,9 +2,17 @@
 # Hard deny/permit mechanism for quarantine nodes.
 # This file replaces prose-based quarantine descriptions
 # with a formal, machine-readable access control system.
+#
+# AUTHORITY LEVEL: 4 (enforcement)
+# Enforces quarantine policy declared in BOOTSTRAP_CONTRACT.yaml (Level 1).
+# Overrides RUNTIME_PROFILES.yaml and AGENT_ADAPTERS.yaml on node access.
+# Cannot override Level 1 invariants.
 
 version: "1.0"
 schema: quarantine_rules
+authority_level: 4
+authority_name: enforcement
+defers_to: .nechto/BOOTSTRAP_CONTRACT.yaml
 
 # ─── Default policy ────────────────────────────────────────────────
 default_policy: DENY

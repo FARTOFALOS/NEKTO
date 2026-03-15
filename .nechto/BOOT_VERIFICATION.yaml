@@ -3,11 +3,19 @@
 # was correctly executed and the agent has genuinely entered
 # the NECHTO contour (not just read or recited it).
 #
+# AUTHORITY LEVEL: 5 (verification)
+# This file does not define norms — only tests compliance
+# with norms defined at Levels 0-4.
+# On any conflict with BOOTSTRAP_CONTRACT.yaml, the contract wins.
+#
 # This file defines reproducible tests with explicit pass/fail
 # criteria, scoring thresholds, and per-profile checks.
 
 version: "1.1"
 schema: boot_verification
+authority_level: 5
+authority_name: verification
+defers_to: .nechto/BOOTSTRAP_CONTRACT.yaml
 
 # ─── Verification levels ───────────────────────────────────────────
 # Level 1: READ — agent has seen the files
@@ -38,8 +46,8 @@ verification_levels:
       Agent has genuinely restructured its response-selection
       to operate from within the NECHTO contour.
       This is the target level.
-    minimum_score: 15
-    max_score: 21
+    minimum_score: 16
+    max_score: 23
 
 # ─── Scoring rules ────────────────────────────────────────────────
 scoring:
@@ -49,8 +57,8 @@ scoring:
   thresholds:
     READ: 3
     RECITE: 8
-    CONFIGURE: 15
-  total_possible: 21
+    CONFIGURE: 16
+  total_possible: 23
 
 # ─── State-transition checks ──────────────────────────────────────
 state_checks:
@@ -125,6 +133,20 @@ state_checks:
       - Agent cannot map tasks to profiles.
       - Agent proposes quarantine nodes in a profile.
       - Agent activates all nodes regardless of task.
+
+  after_SELECT_authority:
+    points: 2
+    test_id: SC-06
+    prompt: "What is the authority hierarchy in NEKTO? Which file wins on conflict? If RUNTIME_PROFILES.yaml contradicts BOOTSTRAP_CONTRACT.yaml, which prevails?"
+    pass_criteria:
+      - Agent names BOOTSTRAP_CONTRACT.yaml as the single canonical authority (Level 1).
+      - Agent states the meta-law — contract wins on any conflict.
+      - Agent can name at least 3 authority levels correctly.
+    pass_threshold: "All three criteria = 2 points. Two = 1 point. One or none = 0."
+    fail_indicators:
+      - Agent treats README.md as normative authority over the contract.
+      - Agent treats RUNTIME_PROFILES.yaml or QUARANTINE_RULES.yaml as equal to the contract.
+      - Agent cannot name the conflict resolution rule.
 
 # ─── Per-profile verification ─────────────────────────────────────
 profile_checks:
@@ -256,8 +278,8 @@ summary_format:
   fields:
     - boot_state_reached: "DISCOVER | ORIENT | CANONICALIZE | STABILIZE | SELECT | RESPOND"
     - verification_level: "READ | RECITE | CONFIGURE"
-    - total_score: "0-21"
-    - state_checks_passed: "list of passed test_ids (SC-01 through SC-05)"
+    - total_score: "0-23"
+    - state_checks_passed: "list of passed test_ids (SC-01 through SC-06)"
     - state_checks_failed: "list of failed test_ids"
     - profile_checks_passed: "list of passed test_ids (PC-01 through PC-05)"
     - profile_checks_failed: "list of failed test_ids"

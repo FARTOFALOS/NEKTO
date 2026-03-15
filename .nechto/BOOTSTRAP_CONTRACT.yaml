@@ -4,8 +4,89 @@
 # which states are AVAILABLE, which are FORBIDDEN, and what minimal
 # contour to raise by default.
 
-version: "1.0"
+version: "1.1"
 schema: bootstrap_contract
+
+# ─── Authority hierarchy ──────────────────────────────────────────
+# This is the single canonical precedence regime for the entire NEKTO contour.
+# It eliminates split-brain canonicality by assigning each file a strict
+# authority level. Higher-level files override lower-level files on conflict.
+#
+# META-LAW: If any file in this repository conflicts with
+# BOOTSTRAP_CONTRACT.yaml, the contract wins. No exceptions.
+authority_hierarchy:
+  meta_law: >
+    If any file in this repository conflicts with BOOTSTRAP_CONTRACT.yaml,
+    the contract wins. No exceptions. This file is the single canonical
+    authority for load order, precedence, status taxonomy, invariants,
+    minimal contour, and runtime scope.
+  levels:
+    - level: 0
+      name: identity
+      files:
+        - README.md
+      scope: >
+        What is this repository and where to go next.
+        The boot rail. First file read. Does not define normative rules —
+        only orients the reader and points to Level 1.
+    - level: 1
+      name: canonical_authority
+      files:
+        - .nechto/BOOTSTRAP_CONTRACT.yaml
+      scope: >
+        The single source of truth. Declares load order, mandatory files,
+        status taxonomy, invariants, minimal contour, authority hierarchy,
+        canonical entry order, and conflict resolution rules.
+        All other files are subordinate.
+    - level: 2
+      name: procedure
+      files:
+        - .nechto/BOOT_STATE_MACHINE.yaml
+      scope: >
+        Executes the contract. Defines state transitions for boot sequence.
+        Does not override the contract — implements it.
+    - level: 3
+      name: specialization
+      files:
+        - .nechto/RUNTIME_PROFILES.yaml
+        - .nechto/AGENT_ADAPTERS.yaml
+      scope: >
+        Task-specific and model-specific adaptations.
+        Must not contradict Level 1 or Level 2.
+    - level: 4
+      name: enforcement
+      files:
+        - .nechto/QUARANTINE_RULES.yaml
+      scope: >
+        Hard deny/permit rules for quarantine nodes.
+        Enforces quarantine policy declared at Level 1.
+        Cannot override Level 1 invariants.
+    - level: 5
+      name: verification
+      files:
+        - .nechto/BOOT_VERIFICATION.yaml
+      scope: >
+        Eval harness. Verifies correct boot. Does not define norms —
+        only tests compliance with norms defined at Levels 0-4.
+  prose_documents:
+    - file: CANONICAL_AGENT_ARCHITECTURE.md
+      authority: >
+        Canonical encyclopedia. Normative for node definitions and layer structure.
+        On load order, invariants, and status taxonomy — defers to Level 1.
+    - file: .nechto/ACTIVATION_POLICY.md
+      authority: >
+        Human-readable activation rules. On any conflict with
+        BOOTSTRAP_CONTRACT.yaml or QUARANTINE_RULES.yaml,
+        the YAML files are authoritative.
+    - file: .nechto/CONTOUR_MAP.md
+      authority: >
+        Navigation aid only. No normative authority.
+  conflict_resolution:
+    - rule: "BOOTSTRAP_CONTRACT.yaml > all other files."
+    - rule: "BOOT_STATE_MACHINE.yaml > RUNTIME_PROFILES.yaml, AGENT_ADAPTERS.yaml."
+    - rule: "QUARANTINE_RULES.yaml > RUNTIME_PROFILES.yaml on node access."
+    - rule: "Prose (.md) files defer to YAML contracts on normative definitions."
+    - rule: "If two YAML files at the same level conflict, BOOTSTRAP_CONTRACT.yaml resolves."
 
 # ─── Entry prerequisites ───────────────────────────────────────────
 entry:
@@ -149,6 +230,12 @@ invariants:
     rule: Architecture is not style.
   - id: INV-008
     rule: README.md is always the first file read, regardless of agent family or adapter.
+  - id: INV-009
+    rule: >
+      BOOTSTRAP_CONTRACT.yaml is the single canonical authority.
+      If any file conflicts with the contract, the contract wins.
+      No other file may override load order, invariants, status taxonomy,
+      or minimal contour defined here.
 
 # ─── Canonical entry order ─────────────────────────────────────────
 # This is the single authoritative entry sequence.

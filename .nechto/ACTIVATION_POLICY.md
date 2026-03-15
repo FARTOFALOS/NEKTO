@@ -2,7 +2,7 @@
 
 This file extracts and formalizes the activation rules of the NECHTO contour as a standalone reference.
 
-> **Machine-readable formalizations:** The rules in this file are also expressed as machine-readable contracts in `BOOTSTRAP_CONTRACT.yaml` (invariants, status permissions), `QUARANTINE_RULES.yaml` (hard deny/permit), and `RUNTIME_PROFILES.yaml` (task-class node mapping). When in doubt, the YAML files are the authoritative specification.
+> **Authority level:** This is a prose document with no authority level in the hierarchy. On any conflict with `BOOTSTRAP_CONTRACT.yaml` (Level 1), `QUARANTINE_RULES.yaml` (Level 4), or `RUNTIME_PROFILES.yaml` (Level 3), the YAML files are authoritative. See `BOOTSTRAP_CONTRACT.yaml` section `authority_hierarchy` for the full precedence regime.
 
 ---
 

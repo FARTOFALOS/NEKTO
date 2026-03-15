@@ -2,9 +2,18 @@
 # Task-class → node-cluster mapping.
 # Each profile defines which nodes to activate for a given task type.
 # All profiles include the minimal coherent contour as a base.
+#
+# AUTHORITY LEVEL: 3 (specialization)
+# This file must not contradict BOOTSTRAP_CONTRACT.yaml (Level 1)
+# or BOOT_STATE_MACHINE.yaml (Level 2).
+# QUARANTINE_RULES.yaml (Level 4) overrides this file on node access.
+# On any conflict, higher-level files win.
 
 version: "1.0"
 schema: runtime_profiles
+authority_level: 3
+authority_name: specialization
+defers_to: .nechto/BOOTSTRAP_CONTRACT.yaml
 
 # ─── Base contour (always included) ────────────────────────────────
 base_contour:

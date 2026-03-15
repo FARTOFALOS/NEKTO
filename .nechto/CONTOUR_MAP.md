@@ -114,14 +114,16 @@ README.md → CANONICAL_AGENT_ARCHITECTURE.md → layers/0_foundation/ → ... �
 
 ## Machine-readable boot layer
 
-| File | Purpose |
-|------|---------|
-| `BOOTSTRAP_CONTRACT.yaml` | Prescriptive contract: what to load, in what order, what is mandatory |
-| `BOOT_STATE_MACHINE.yaml` | State-transition protocol: DISCOVER → ORIENT → CANONICALIZE → STABILIZE → SELECT → RESPOND |
-| `AGENT_ADAPTERS.yaml` | Adaptation hints for GPT / Claude / Codex / DeepSeek / OpenClaw |
-| `RUNTIME_PROFILES.yaml` | Task-class → node-cluster mapping (analysis, coding, reflection, etc.) |
-| `QUARANTINE_RULES.yaml` | Hard deny/permit mechanism for quarantine nodes |
-| `BOOT_VERIFICATION.yaml` | Eval harness: checks that distinguish reading from recitation from configuration |
+| File | Purpose | Authority Level |
+|------|---------|----------------|
+| `BOOTSTRAP_CONTRACT.yaml` | Prescriptive contract: what to load, in what order, what is mandatory. **Single canonical authority.** | Level 1 |
+| `BOOT_STATE_MACHINE.yaml` | State-transition protocol: DISCOVER → ORIENT → CANONICALIZE → STABILIZE → SELECT → RESPOND | Level 2 |
+| `AGENT_ADAPTERS.yaml` | Adaptation hints for GPT / Claude / Codex / DeepSeek / OpenClaw | Level 3 |
+| `RUNTIME_PROFILES.yaml` | Task-class → node-cluster mapping (analysis, coding, reflection, etc.) | Level 3 |
+| `QUARANTINE_RULES.yaml` | Hard deny/permit mechanism for quarantine nodes | Level 4 |
+| `BOOT_VERIFICATION.yaml` | Eval harness: checks that distinguish reading from recitation from configuration | Level 5 |
+
+> **Meta-law:** If any file conflicts with `BOOTSTRAP_CONTRACT.yaml`, the contract wins.
 
 ## Totals
 

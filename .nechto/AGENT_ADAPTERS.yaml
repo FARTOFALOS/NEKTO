@@ -4,11 +4,19 @@
 # should be presented to maximize comprehension and compliance
 # for a given inference style.
 #
+# AUTHORITY LEVEL: 3 (specialization)
+# This file must not contradict BOOTSTRAP_CONTRACT.yaml (Level 1)
+# or BOOT_STATE_MACHINE.yaml (Level 2).
+# On any conflict, higher-level files win.
+#
 # INVARIANT: README.md is always the first file read.
 # No adapter may override this. See BOOTSTRAP_CONTRACT.yaml canonical_entry_order.
 
 version: "1.0"
 schema: agent_adapters
+authority_level: 3
+authority_name: specialization
+defers_to: .nechto/BOOTSTRAP_CONTRACT.yaml
 
 # ─── Default adapter ───────────────────────────────────────────────
 default:
