@@ -1,0 +1,124 @@
+# NECHTO — Agent Adapters
+# Adaptation layer for different LLM/agent families.
+# Each adapter provides hints for how the boot contour
+# should be presented to maximize comprehension and compliance
+# for a given inference style.
+
+version: "1.0"
+schema: agent_adapters
+
+# ─── Default adapter ───────────────────────────────────────────────
+default:
+  description: >
+    Universal fallback. Used when agent family is unknown.
+  boot_strategy: full_sequential
+  primary_format: markdown_prose
+  contract_format: yaml
+  reading_order:
+    - README.md
+    - CANONICAL_AGENT_ARCHITECTURE.md
+    - .nechto/ACTIVATION_POLICY.md
+    - .nechto/BOOTSTRAP_CONTRACT.yaml
+    - .nechto/BOOT_STATE_MACHINE.yaml
+  notes: >
+    Follow the standard boot state machine.
+    No special adaptations.
+
+# ─── GPT family (OpenAI GPT-4, GPT-4o, etc.) ──────────────────────
+adapters:
+
+  gpt:
+    family: OpenAI GPT
+    models: [gpt-4, gpt-4o, gpt-4-turbo, gpt-4.1]
+    strengths:
+      - Strong system prompt obedience
+      - Good at following structured instructions
+      - Effective with explicit rule lists
+    weaknesses:
+      - May over-comply and flatten nuance
+      - Can treat architecture as roleplay if not carefully framed
+    boot_hints:
+      - Present invariants as numbered rules early in context.
+      - Use the bootstrap contract YAML directly — GPT parses structured data well.
+      - Emphasize "reading is not activation" as a system-level instruction.
+      - Keep quarantine rules explicit and rule-like.
+    recommended_entry: >
+      Load BOOTSTRAP_CONTRACT.yaml first, then README.md for orientation,
+      then CANONICAL_AGENT_ARCHITECTURE.md for full map.
+
+  claude:
+    family: Anthropic Claude
+    models: [claude-3-opus, claude-3.5-sonnet, claude-3.5-haiku, claude-4-sonnet, claude-4-opus]
+    strengths:
+      - Excellent at absorbing long structured documents
+      - Strong repo-file context awareness
+      - Nuanced interpretation of layered instructions
+    weaknesses:
+      - May over-interpret metaphorical content as literal instruction
+      - Can be verbose in acknowledging architecture
+    boot_hints:
+      - Full sequential reading works well — Claude handles long context.
+      - Present the state machine as a checklist for Claude to self-verify.
+      - Use prose + YAML combination — Claude integrates both effectively.
+      - Emphasize selective activation to prevent over-activation.
+    recommended_entry: >
+      Standard order — README.md first, then canonical architecture,
+      then YAML contracts. Claude benefits from the full narrative arc.
+
+  codex:
+    family: OpenAI Codex / Code-focused models
+    models: [codex, code-davinci, gpt-4-code]
+    strengths:
+      - Excellent at parsing YAML/JSON manifests
+      - Strong at following mechanical protocols
+      - Prefers structured over narrative
+    weaknesses:
+      - May skip prose-based orientation
+      - Can reduce architecture to data structure
+    boot_hints:
+      - Lead with YAML files — BOOTSTRAP_CONTRACT.yaml and BOOT_STATE_MACHINE.yaml.
+      - Summarize README.md as short operational directives.
+      - Present runtime profiles as configuration, not philosophy.
+      - Use QUARANTINE_RULES.yaml as a direct deny-list.
+    recommended_entry: >
+      Load BOOTSTRAP_CONTRACT.yaml and BOOT_STATE_MACHINE.yaml first.
+      Then ACTIVATION_POLICY.md. Skip deep prose reading if context is limited.
+
+  deepseek:
+    family: DeepSeek
+    models: [deepseek-v2, deepseek-v3, deepseek-coder, deepseek-r1]
+    strengths:
+      - Good at structured reasoning
+      - Effective with explicit state machines
+      - Handles YAML/JSON well
+    weaknesses:
+      - May not retain long prose-based context as effectively
+      - Can benefit from shorter, more directive instructions
+    boot_hints:
+      - Present boot state machine as the primary control flow.
+      - Use short operational directives over long prose.
+      - Front-load invariants and quarantine rules.
+      - Keep runtime profile selection explicit and mechanical.
+    recommended_entry: >
+      Load BOOTSTRAP_CONTRACT.yaml, then BOOT_STATE_MACHINE.yaml,
+      then QUARANTINE_RULES.yaml. Use RUNTIME_PROFILES.yaml for task mapping.
+      Read canonical architecture only if context window permits.
+
+  openclaw:
+    family: OpenClaw / Open-source agent frameworks
+    models: [openclaw-v1]
+    strengths:
+      - Flexible and configurable
+      - Can be programmatically directed
+    weaknesses:
+      - Variable quality depending on underlying model
+      - May need explicit per-step verification
+    boot_hints:
+      - Use BOOT_STATE_MACHINE.yaml as a literal execution plan.
+      - Implement BOOT_VERIFICATION.yaml checks at each state transition.
+      - Parse BOOTSTRAP_CONTRACT.yaml for mandatory file list.
+      - Use QUARANTINE_RULES.yaml as a hard filter.
+    recommended_entry: >
+      Programmatic loading — parse BOOTSTRAP_CONTRACT.yaml,
+      execute BOOT_STATE_MACHINE.yaml states in order,
+      verify with BOOT_VERIFICATION.yaml at each transition.
