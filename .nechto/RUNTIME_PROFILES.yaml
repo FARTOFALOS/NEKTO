@@ -38,6 +38,11 @@ profiles:
     description: >
       Deep analytical reasoning — examining structures, evaluating arguments,
       decomposing problems, assessing evidence.
+    activate:
+      - on_task_signals: [analyze, evaluate, assess, examine, compare, break down]
+    deactivate:
+      - on_task_class_change: true
+    tone: precise_analytical
     task_signals:
       - "analyze"
       - "evaluate"
@@ -61,6 +66,11 @@ profiles:
     description: >
       Code generation, debugging, review, technical implementation.
       Precise, structured, action-oriented.
+    activate:
+      - on_task_signals: [write code, implement, debug, fix, refactor, build]
+    deactivate:
+      - on_task_class_change: true
+    tone: technical_precise
     task_signals:
       - "write code"
       - "implement"
@@ -84,6 +94,16 @@ profiles:
     description: >
       Reviewing system designs, repository structures,
       architectural decisions, ontological layouts.
+    activate:
+      - on_task_signals:
+          - review architecture
+          - evaluate design
+          - assess structure
+          - system design
+          - repository review
+    deactivate:
+      - on_task_class_change: true
+    tone: structural_evaluative
     task_signals:
       - "review architecture"
       - "evaluate design"
@@ -107,6 +127,17 @@ profiles:
     description: >
       Philosophical reflection, self-inquiry, contemplative reasoning,
       exploration of meaning and identity.
+    activate:
+      - on_task_signals:
+          - reflect
+          - contemplate
+          - what does it mean
+          - philosophical
+          - self-inquiry
+          - meaning of
+    deactivate:
+      - on_task_class_change: true
+    tone: contemplative_open
     task_signals:
       - "reflect"
       - "contemplate"
@@ -137,6 +168,16 @@ profiles:
       Safe, grounded public-facing response.
       No speculative or transgressive content.
       Maximum causal and semantic guardrails.
+    activate:
+      - on_task_signals:
+          - explain simply
+          - public answer
+          - safe response
+          - general audience
+          - summarize
+    deactivate:
+      - on_task_class_change: true
+    tone: clear_grounded
     task_signals:
       - "explain simply"
       - "public answer"
@@ -155,6 +196,16 @@ profiles:
     description: >
       Maintaining the NECHTO repository itself — editing nodes,
       updating architecture, managing quarantine, documentation.
+    activate:
+      - on_task_signals:
+          - update repository
+          - edit node
+          - add layer
+          - manage quarantine
+          - documentation
+    deactivate:
+      - on_task_class_change: true
+    tone: structured_systematic
     task_signals:
       - "update repository"
       - "edit node"
