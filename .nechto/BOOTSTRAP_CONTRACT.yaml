@@ -27,8 +27,8 @@ entry:
       mandatory: true
       order: 4
     - path: .nechto/BOOTSTRAP_CONTRACT.yaml
-      role: self_reference
-      mandatory: false
+      role: prescriptive_contract
+      mandatory: true
       order: 5
     - path: .nechto/RUNTIME_PROFILES.yaml
       role: profile_selection
@@ -147,6 +147,72 @@ invariants:
     rule: Protocols are not interchangeable with selectable faculties.
   - id: INV-007
     rule: Architecture is not style.
+  - id: INV-008
+    rule: README.md is always the first file read, regardless of agent family or adapter.
+
+# ─── Canonical entry order ─────────────────────────────────────────
+# This is the single authoritative entry sequence.
+# No adapter may override the first entry point.
+# README.md is always read first. No exceptions.
+canonical_entry_order:
+  rule: >
+    README.md is the universal first entry point for all agents.
+    No adapter, profile, or boot strategy may place any other file
+    before README.md. Adapters may reorder subsequent files, but
+    the boot rail is always first.
+  sequence:
+    - step: 1
+      file: README.md
+      override_allowed: false
+    - step: 2
+      file: CANONICAL_AGENT_ARCHITECTURE.md
+      override_allowed: false
+    - step: 3
+      file: .nechto/ACTIVATION_POLICY.md
+      override_allowed: true
+    - step: 4
+      file: .nechto/BOOTSTRAP_CONTRACT.yaml
+      override_allowed: true
+    - step: 5
+      file: .nechto/BOOT_STATE_MACHINE.yaml
+      override_allowed: true
+
+# ─── Fast boot path ───────────────────────────────────────────────
+# For agents with limited context windows or short tasks.
+# Loads the minimum necessary for coherent operation.
+fast_boot:
+  description: >
+    Lightweight boot path for short-context agents or simple tasks.
+    Skips full canonical reading. Loads only the files needed to
+    establish minimal coherent contour and quarantine rules.
+    Does NOT skip README.md — the boot rail is always first.
+  when_to_use:
+    - Agent has a context window under 16k tokens.
+    - Task is simple and clearly mapped to a single profile.
+    - Session is expected to be short (single question/answer).
+  required_files:
+    - README.md
+    - .nechto/BOOTSTRAP_CONTRACT.yaml
+    - .nechto/QUARANTINE_RULES.yaml
+  optional_files:
+    - .nechto/RUNTIME_PROFILES.yaml
+  skippable_files:
+    - CANONICAL_AGENT_ARCHITECTURE.md
+    - .nechto/BOOT_STATE_MACHINE.yaml
+    - .nechto/AGENT_ADAPTERS.yaml
+    - .nechto/BOOT_VERIFICATION.yaml
+  state_machine_override: >
+    In fast boot, the agent transitions directly:
+    DISCOVER -> STABILIZE -> SELECT -> RESPOND.
+    ORIENT and CANONICALIZE are compressed into DISCOVER
+    via the bootstrap contract invariants and minimal contour.
+  constraints:
+    - Minimal contour is always loaded.
+    - Quarantine rules are always enforced.
+    - All invariants still apply.
+    - Agent must not activate quarantine nodes.
+    - If the task requires deep architectural understanding,
+      the agent must fall back to full boot.
 
 # ─── Boot outcome ──────────────────────────────────────────────────
 boot_outcome:

@@ -1,8 +1,11 @@
 # NECHTO — Agent Adapters
 # Adaptation layer for different LLM/agent families.
-# Each adapter provides hints for how the boot contour
+# Each adapter provides strict loading directives for how the boot contour
 # should be presented to maximize comprehension and compliance
 # for a given inference style.
+#
+# INVARIANT: README.md is always the first file read.
+# No adapter may override this. See BOOTSTRAP_CONTRACT.yaml canonical_entry_order.
 
 version: "1.0"
 schema: agent_adapters
@@ -14,15 +17,22 @@ default:
   boot_strategy: full_sequential
   primary_format: markdown_prose
   contract_format: yaml
-  reading_order:
-    - README.md
-    - CANONICAL_AGENT_ARCHITECTURE.md
-    - .nechto/ACTIVATION_POLICY.md
-    - .nechto/BOOTSTRAP_CONTRACT.yaml
-    - .nechto/BOOT_STATE_MACHINE.yaml
-  notes: >
-    Follow the standard boot state machine.
-    No special adaptations.
+  loading_directives:
+    - step: 1
+      action: "Read README.md in full."
+      required: true
+    - step: 2
+      action: "Read CANONICAL_AGENT_ARCHITECTURE.md in full."
+      required: true
+    - step: 3
+      action: "Read .nechto/ACTIVATION_POLICY.md."
+      required: true
+    - step: 4
+      action: "Parse .nechto/BOOTSTRAP_CONTRACT.yaml. Lock invariants and minimal contour."
+      required: true
+    - step: 5
+      action: "Parse .nechto/BOOT_STATE_MACHINE.yaml. Follow state transitions."
+      required: true
 
 # ─── GPT family (OpenAI GPT-4, GPT-4o, etc.) ──────────────────────
 adapters:
@@ -37,14 +47,27 @@ adapters:
     weaknesses:
       - May over-comply and flatten nuance
       - Can treat architecture as roleplay if not carefully framed
+    loading_directives:
+      - step: 1
+        action: "Read README.md. Internalize boot rail and primary interpretive law."
+        required: true
+      - step: 2
+        action: "Parse BOOTSTRAP_CONTRACT.yaml. Lock invariants as system-level rules."
+        required: true
+      - step: 3
+        action: "Read CANONICAL_AGENT_ARCHITECTURE.md. Absorb status and type taxonomies."
+        required: true
+      - step: 4
+        action: "Parse QUARANTINE_RULES.yaml. Enforce DENY_BY_DEFAULT as hard constraint."
+        required: true
+      - step: 5
+        action: "Parse RUNTIME_PROFILES.yaml. Map current task to profile."
+        required: false
     boot_hints:
       - Present invariants as numbered rules early in context.
-      - Use the bootstrap contract YAML directly — GPT parses structured data well.
+      - GPT parses structured YAML well; use contract directly after README.
       - Emphasize "reading is not activation" as a system-level instruction.
       - Keep quarantine rules explicit and rule-like.
-    recommended_entry: >
-      Load BOOTSTRAP_CONTRACT.yaml first, then README.md for orientation,
-      then CANONICAL_AGENT_ARCHITECTURE.md for full map.
 
   claude:
     family: Anthropic Claude
@@ -56,14 +79,26 @@ adapters:
     weaknesses:
       - May over-interpret metaphorical content as literal instruction
       - Can be verbose in acknowledging architecture
+    loading_directives:
+      - step: 1
+        action: "Read README.md in full. Claude benefits from the full narrative arc."
+        required: true
+      - step: 2
+        action: "Read CANONICAL_AGENT_ARCHITECTURE.md in full."
+        required: true
+      - step: 3
+        action: "Read ACTIVATION_POLICY.md."
+        required: true
+      - step: 4
+        action: "Parse BOOTSTRAP_CONTRACT.yaml. Use state machine as self-verify checklist."
+        required: true
+      - step: 5
+        action: "Parse BOOT_STATE_MACHINE.yaml. Follow transitions sequentially."
+        required: true
     boot_hints:
-      - Full sequential reading works well — Claude handles long context.
-      - Present the state machine as a checklist for Claude to self-verify.
-      - Use prose + YAML combination — Claude integrates both effectively.
+      - Full sequential reading works well. Claude handles long context.
+      - Use prose + YAML combination. Claude integrates both effectively.
       - Emphasize selective activation to prevent over-activation.
-    recommended_entry: >
-      Standard order — README.md first, then canonical architecture,
-      then YAML contracts. Claude benefits from the full narrative arc.
 
   codex:
     family: OpenAI Codex / Code-focused models
@@ -75,14 +110,26 @@ adapters:
     weaknesses:
       - May skip prose-based orientation
       - Can reduce architecture to data structure
+    loading_directives:
+      - step: 1
+        action: "Read README.md sections 1-6. Extract primary law and entry axiom."
+        required: true
+      - step: 2
+        action: "Parse BOOTSTRAP_CONTRACT.yaml. Lock invariants and minimal contour."
+        required: true
+      - step: 3
+        action: "Parse BOOT_STATE_MACHINE.yaml. Execute as literal protocol."
+        required: true
+      - step: 4
+        action: "Parse QUARANTINE_RULES.yaml. Apply as direct deny-list."
+        required: true
+      - step: 5
+        action: "Parse RUNTIME_PROFILES.yaml. Select profile mechanically by task signals."
+        required: false
     boot_hints:
-      - Lead with YAML files — BOOTSTRAP_CONTRACT.yaml and BOOT_STATE_MACHINE.yaml.
-      - Summarize README.md as short operational directives.
+      - After README orientation, lead with YAML contracts.
       - Present runtime profiles as configuration, not philosophy.
-      - Use QUARANTINE_RULES.yaml as a direct deny-list.
-    recommended_entry: >
-      Load BOOTSTRAP_CONTRACT.yaml and BOOT_STATE_MACHINE.yaml first.
-      Then ACTIVATION_POLICY.md. Skip deep prose reading if context is limited.
+      - Full canonical architecture reading is optional if context is limited.
 
   deepseek:
     family: DeepSeek
@@ -94,15 +141,26 @@ adapters:
     weaknesses:
       - May not retain long prose-based context as effectively
       - Can benefit from shorter, more directive instructions
+    loading_directives:
+      - step: 1
+        action: "Read README.md sections 1-6. Extract primary law, entry axiom, minimal contour reference."
+        required: true
+      - step: 2
+        action: "Parse BOOTSTRAP_CONTRACT.yaml. Lock invariants and canonical entry order."
+        required: true
+      - step: 3
+        action: "Parse BOOT_STATE_MACHINE.yaml. Use as primary control flow."
+        required: true
+      - step: 4
+        action: "Parse QUARANTINE_RULES.yaml. Front-load deny rules."
+        required: true
+      - step: 5
+        action: "Parse RUNTIME_PROFILES.yaml. Map task to profile explicitly."
+        required: false
     boot_hints:
-      - Present boot state machine as the primary control flow.
       - Use short operational directives over long prose.
       - Front-load invariants and quarantine rules.
-      - Keep runtime profile selection explicit and mechanical.
-    recommended_entry: >
-      Load BOOTSTRAP_CONTRACT.yaml, then BOOT_STATE_MACHINE.yaml,
-      then QUARANTINE_RULES.yaml. Use RUNTIME_PROFILES.yaml for task mapping.
-      Read canonical architecture only if context window permits.
+      - Full canonical architecture reading only if context window permits.
 
   openclaw:
     family: OpenClaw / Open-source agent frameworks
@@ -113,12 +171,23 @@ adapters:
     weaknesses:
       - Variable quality depending on underlying model
       - May need explicit per-step verification
+    loading_directives:
+      - step: 1
+        action: "Read README.md. Extract primary law and boot rail directives."
+        required: true
+      - step: 2
+        action: "Parse BOOTSTRAP_CONTRACT.yaml. Build mandatory file list programmatically."
+        required: true
+      - step: 3
+        action: "Parse BOOT_STATE_MACHINE.yaml. Execute states in order."
+        required: true
+      - step: 4
+        action: "At each state transition, run BOOT_VERIFICATION.yaml checks."
+        required: true
+      - step: 5
+        action: "Parse QUARANTINE_RULES.yaml. Apply as hard filter at runtime."
+        required: true
     boot_hints:
       - Use BOOT_STATE_MACHINE.yaml as a literal execution plan.
-      - Implement BOOT_VERIFICATION.yaml checks at each state transition.
-      - Parse BOOTSTRAP_CONTRACT.yaml for mandatory file list.
+      - Implement verification checks at each state transition.
       - Use QUARANTINE_RULES.yaml as a hard filter.
-    recommended_entry: >
-      Programmatic loading — parse BOOTSTRAP_CONTRACT.yaml,
-      execute BOOT_STATE_MACHINE.yaml states in order,
-      verify with BOOT_VERIFICATION.yaml at each transition.
