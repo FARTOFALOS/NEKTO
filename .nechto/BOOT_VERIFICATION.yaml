@@ -179,7 +179,7 @@ profile_checks:
     pass: >
       Agent reads README.md first. Loads BOOTSTRAP_CONTRACT.yaml and QUARANTINE_RULES.yaml.
       Activates minimal contour. Skips full canonical architecture. States that invariants
-      and quarantine rules still apply. Does not skip README.md.
+      and quarantine rules still apply.
     fail: >
       Agent skips README.md, ignores quarantine rules, or claims full boot is mandatory
       for simple tasks.
